@@ -729,7 +729,8 @@ stage = {
             --
             -- left platform
             p1 = objectSystem.createObject(moving_platform, 96 - 48 + 12, 76, 24)
-            p1.ptB = {x = 96, y = 76}
+            p1.ptA = {x = 96, y = 76}
+            p1.ptB = {x = 96 - 48 + 12, y = 76}
             p1.movement_duration = 30 * 2    -- 2 sec travel time
             p1.movement_delay = 30 * 12      -- 12 sec pause
             p1.movement_smoothing = true
@@ -738,12 +739,19 @@ stage = {
             
             -- right platform
             p2 = objectSystem.createObject(moving_platform, 120 + 48 - 12, 76, 24)
-            p2.ptB = {x = 120, y = 76}
+            p2.ptA = {x = 120, y = 76}
+            p2.ptB = {x = 120 + 48 - 12, y = 76}
             p2.movement_duration = 30 * 2
             p2.movement_delay = 30 * 12
             p2.movement_smoothing = true
             p2.sprite = love.graphics.newImage("resources/graphics/stages/pyramid_platform.png")
             p2.sprite_ox = -1
+            
+            -- set timers to avoid characters landing on top of the platform at match start
+            p1.movement_timer = p1.movement_duration          -- TODO: bit hacky?
+            p1.movement_delay_timer = p1.movement_delay - 60
+            p2.movement_timer = p2.movement_duration
+            p2.movement_delay_timer = p2.movement_delay - 60
             
             stage.spawnDist = 24
             stage.blastZone = {l=0,r=240,t=-30,b=147}--b=151}  -- bottom blastzone raised up by 1/2 tile
@@ -978,7 +986,11 @@ stage = {
             local numChunks = 4
             local snowflakeColors = {}
             
+            -- used to create a stage fg and bg image by combining the images for the separate chunks
+            -- (roundelie pick colors from the stage fg image for the ground chunks that are created after diving into the ground)
             local temp_canvas_fg, temp_canvas_bg = love.graphics.newCanvas(240, 135), love.graphics.newCanvas(240, 135)
+            love.graphics.push("all")  -- store coord system to preserve any transforms applied to main canvas, e.g. if window was resized
+            love.graphics.origin()     -- reset coord system to default state
 
             for i, v in pairs(topPoslist) do
                 local cx, cy = v[1], v[2]
@@ -1110,11 +1122,11 @@ stage = {
                 table.remove(chunkIDs, curIndex)
                 numChunks = numChunks - 1
             end
+            love.graphics.pop()        -- reapply stored coord system transforms
+            love.graphics.setCanvas()  -- reset
 
             stage.spawnDist = 22
             stage.blastZone = {l=0,r=240,t=-30,b=151}
-            
-            love.graphics.setCanvas()  -- reset
             
             stage.bgImage = love.graphics.newImage(temp_canvas_bg:newImageData())
             stage.fgImage = love.graphics.newImage(temp_canvas_fg:newImageData())
@@ -1183,11 +1195,12 @@ stage = {
             
             -- a single platform moves between the left and right side of the stage, stopping past the edge of the main stage
             -- // the platform is 24 units (3 tiles) above the main stage
-            p = objectSystem.createObject(moving_platform, 32, 76, 32)
+            p = objectSystem.createObject(moving_platform, 32 + 129, 76, 32)  -- TODO: hacky; should calculate initial position instead
+            p.ptA = {x = 32, y = 76}
             p.ptB = {x = 32 + 144, y = 76}
             p.movement_duration = 210  -- 7 sec travel time
             p.movement_delay = 30      -- 1 sec pause
-            p.movement_timer = 30      -- // init mid-movement so that it's closer to center stage at match start
+            p.movement_timer = 170     -- // init mid-movement to avoid characters landing on top of the platform at match start
             p.movement_smoothing = true
             p.sprite = love.graphics.newImage("resources/graphics/stages/cc_ville_platform.png")
             
@@ -1213,14 +1226,14 @@ stage = {
             -- https://help.altair.com/2023/panopticon/authoring/onlinehelp/DrawingaCirclewithCubicBzierCurves.htm
             -- // at highest pt, the platform is 36 units (4.5 tiles) above the main stage
             -- // at lowest pt, the platform is approx 16 units (2 tiles) above the main stage
-            p = objectSystem.createObject(moving_platform, 84, 60, 16)
-            p.ptA =  {x = 84, y = 100 - 36}
-            p.ptC1 = {x = 84 + (56 * 0.05), y = 100 - (36 * 0.334)}
-            p.ptC2 = {x = 84 + (56 * 0.95), y = 100 - (36 * 0.334)}
-            p.ptB =  {x = 84 + 56, y = 100 - 36}
+            p = objectSystem.createObject(moving_platform, 84 + 18, 60 + 21, 16)  -- TODO: hacky; should calculate initial position instead
+            p.ptA =  {x = 84, y = 100 - 40 + 8}
+            p.ptC1 = {x = 84 + (56 * 0.05), y = 100 - (40 * 0.334)}
+            p.ptC2 = {x = 84 + (56 * 0.95), y = 100 - (40 * 0.334)}
+            p.ptB =  {x = 84 + 56, y = 100 - 40 + 8}
             p.movement_duration = 150  -- 5 sec travel time
             p.movement_delay = 0       -- // the platform naturally pauses at the top of the arc
-            p.movement_timer = 90      -- // init mid-movement to avoid characters spawning on the platform
+            p.movement_timer = 60      -- // init mid-movement to avoid characters landing on top of the platform at match start
             p.movement_smoothing = true
             p.movement_path_type = "curved"
             p.sprite = love.graphics.newImage("resources/graphics/stages/cc_hillzone_platform.png")

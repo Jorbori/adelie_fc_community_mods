@@ -929,6 +929,9 @@ roundelie = {
                         -- find the most common color in a selection of pixels near the impact position
                         local temp_canvas, img_data, img_x_a, img_x_b, img_y, img_w, img_h
                         
+                        love.graphics.push("all")  -- store coord system to preserve any transforms applied to main canvas, e.g. if window was resized
+                        love.graphics.origin()     -- reset coord system to default state
+                        
                         if ground_hit.type == "solid" or ground_hit.type == "semisolid" then
                             -- "ground" is a platform
                             img_w, img_h = stage.fgImage:getPixelDimensions()
@@ -938,6 +941,7 @@ roundelie = {
                             --  (see warning here: https://love2d.org/wiki/Canvas:newImageData)
                             love.graphics.setCanvas(temp_canvas)
                             love.graphics.clear()
+
                             love.graphics.draw(stage.fgImage, 0, 0)
                             love.graphics.setCanvas()  -- reset
                             img_data = temp_canvas:newImageData()
@@ -966,6 +970,8 @@ roundelie = {
                             img_x_b = img_w - 1
                             img_y = (img_h / 2) - 1
                         end
+                        
+                        love.graphics.pop()  -- reapply stored coord system transforms
                         
                         local counts = {}
                         local most_common_color = {r = 1, g = 0, b = 1, a = 1}
