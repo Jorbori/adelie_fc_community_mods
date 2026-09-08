@@ -190,8 +190,8 @@ rosetta_sandstorm = function()
     -- the particles are designed around smaller p8 window size (128x128) => adjustments made to compensate
     for i = 0, math.floor(24 * (1 + (128/240))) do
         table.insert(particles_fg, {
-            x = math.random() * 240,
-            y = math.random() * 135,
+            x = math.random(240),
+            y = math.random(135),
             s = math.floor(math.random() * 1.25),
             spd = (0.25 * math.random() * 0.25),
             off = math.random(),
@@ -222,34 +222,82 @@ rosetta_sandstorm = function()
     end
 end
 
-rosetta_clouds = function()
--- init ...
-    -- for i=0,16 do
-        -- add(clouds,{ x=rnd"128",
-                     -- y=rnd"64",
-                     -- spd=0.25+rnd"0.75",
-                     -- w=32+rnd"32",
-                     -- c=rnd"1"<0.5 and 2 or 14
-                    -- })
-                    
--- TODO: need to replicate p8 fillp functionality
---      probably with a shader? or using stencil
+-- meant to mimic the functionality of the pico8 fillp() function
+-- // only supports transparency, not secondary colors
+--  ref: https://pico-8.fandom.com/wiki/Fillp, https://nerdyteachers.com/PICO-8/Guide/FILLP
+-- TODO: move to shaders.lua ?
+local pico8fillpShader = love.graphics.newShader[[
+    uniform int u_pattern[16]; // bitmask (note: bitwise operations aren't supported by Love2D's custom GLSL variant)
+    uniform vec4 u_color_on;
+    //uniform vec4 u_color_off;
+    
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+        // get local 4x4 pixel grid coords
+        int x = int(mod(floor(screen_coords.x), 4.0));
+        int y = int(mod(floor(screen_coords.y), 4.0));
+        
+        // get bitmask index for grid coords
+        // pico8 orders pixels in 1D array, i.e. for 4x4 grid, y=0 -> bits 0-3, y=1 -> bits 4-7...
+        int index = y * 4 + x;
+        
+        // only draw pixel if corresponding bit is enabled
+        if (u_pattern[index] == 0) {
+            discard;
+        }
+        return u_color_on;
+    }
+]]
 
--- function draw_clouds()
-    -- fillp"0b1010010110100101.1"
-    -- foreach(clouds,
-            -- function(c)
-                -- c.x+=c.spd-cam_dx
-                -- for i=0,2 do
-                    -- rectfill(c.x-i,c.y+i,c.x+c.w+i,c.y+16-c.w*0.1875-i,c.c)
-                -- end
-                -- if c.x>128 then
-                    -- c.x=-c.w
-                    -- c.y=rnd"64"
-                -- end
-            -- end)
-    -- fillp()
--- end
+-- helper function to convert 16-bit hex number into a bitmask pattern
+-- TODO: move to util.lua ?
+local function hexToBitmaskArray(hex)
+    local pattern = {}
+    for i = 0, 15 do
+        -- bit.band => bitwise AND
+        local bit = bit.band(bit.rshift(hex, i), 1)
+        table.insert(pattern, bit)
+    end
+    return pattern
+end
+
+-- particle code ported over from the rosetta p8 cart (by meep)
+rosetta_clouds = function()
+    for i = 0, math.floor(16* (1 + (128/240))) do
+        table.insert(particles_bg, {
+            x = math.random(240),
+            y = math.random(135),
+            spd = 0.25 + math.random() * 0.75,
+            w = 32 + math.random(32),
+            c_rand = math.random(),
+            
+            update = function(p)
+                p.x = p.x + p.spd
+                if p.x > 240 then
+                    p.x = -p.w
+                    p.y = math.random(135)
+                end
+            end,
+            
+            draw = function(p)
+                local c = {}
+                if p.c_rand < 0.5 then
+                    c[1], c[2], c[3] = util.color(2)
+                else
+                    c[1], c[2], c[3] = util.color(14)
+                end
+                love.graphics.setShader(pico8fillpShader)
+                local pattern = hexToBitmaskArray(0x5A5A)  -- checkerboard pattern (0x5A5A <-> 0b01011010010110101)
+                pico8fillpShader:send("u_pattern", unpack(hexToBitmaskArray(0x5A5A)))
+                pico8fillpShader:send("u_color_on", {c[1], c[2], c[3], 1.0})  -- messy?
+                love.graphics.setColor(1, 1, 1, 1)
+                for i = 0, 2 do
+                    local cx, cy = math.floor(p.x - i), math.floor(p.y + i)
+                    love.graphics.rectangle("fill", cx, cy, p.w + 2 * i, 16 - math.floor(p.w * 0.1875) - 2 * i)
+                end
+                love.graphics.setShader()  -- reset
+            end,
+        })
+    end
 end
 
 make_cog = function(x, y, flip_x)
@@ -720,17 +768,18 @@ stage = {
         -- squaredelie chamber from rosetta
         function()
             -- layout based on smash4 town & city / p+ luigi's mansion v2 / roa2 air armada
-            stage.name = "[wip] pyramid stage"
+            stage.name = "[wip] rosetta stage"
             
             stage.addPlatform(72, 100, 96, 56, "solid")
             
             -- platforms start joined together at the center of the stage and then move out to hover above the edges
-            -- // platforms are 20 units (2.5 tiles) above the main stage
+            -- // platforms are 23 units (~3 tiles) above the main stage (1px offset is better for platform clips)
             --
+            local p_w = 24
             -- left platform
-            p1 = objectSystem.createObject(moving_platform, 96 - 48 + 12, 76, 24)
-            p1.ptA = {x = 96, y = 76}
-            p1.ptB = {x = 96 - 48 + 12, y = 76}
+            p1 = objectSystem.createObject(moving_platform, 96 - 48 + (p_w/2), 77, p_w)
+            p1.ptA = {x = 96, y = 77}
+            p1.ptB = {x = 96 - 48 + (p_w/2), y = 77}
             p1.movement_duration = 30 * 2    -- 2 sec travel time
             p1.movement_delay = 30 * 12      -- 12 sec pause
             p1.movement_smoothing = true
@@ -738,9 +787,9 @@ stage = {
             p1.sprite_ox = -1
             
             -- right platform
-            p2 = objectSystem.createObject(moving_platform, 120 + 48 - 12, 76, 24)
-            p2.ptA = {x = 120, y = 76}
-            p2.ptB = {x = 120 + 48 - 12, y = 76}
+            p2 = objectSystem.createObject(moving_platform, 120 + 48 - (p_w/2), 77, p_w)
+            p2.ptA = {x = 120, y = 77}
+            p2.ptB = {x = 120 + 48 - (p_w/2), y = 77}
             p2.movement_duration = 30 * 2
             p2.movement_delay = 30 * 12
             p2.movement_smoothing = true
@@ -749,9 +798,9 @@ stage = {
             
             -- set timers to avoid characters landing on top of the platform at match start
             p1.movement_timer = p1.movement_duration          -- TODO: bit hacky?
-            p1.movement_delay_timer = p1.movement_delay - 60
+            p1.movement_delay_timer = p1.movement_delay - 30
             p2.movement_timer = p2.movement_duration
-            p2.movement_delay_timer = p2.movement_delay - 60
+            p2.movement_delay_timer = p2.movement_delay - 30
             
             stage.spawnDist = 24
             stage.blastZone = {l=0,r=240,t=-30,b=147}--b=151}  -- bottom blastzone raised up by 1/2 tile
@@ -764,8 +813,8 @@ stage = {
             
             stage.music = nil
             
-            rosetta_sandstorm()
             rosetta_clouds()
+            rosetta_sandstorm()
         end,
 
         -- Memorial from Fuji
@@ -774,10 +823,9 @@ stage = {
 
             stage.addPlatform(56, 88, 128, 16, "solid")
             stage.addPlatform(64, 104, 112, 8, "solid")
-            stage.addPlatform(72, 112, 96, 24, "solid")
+            stage.addPlatform(72, 112, 96, 48, "solid")
             stage.addPlatform(76, 64, 24, 4, "semisolid")
             stage.addPlatform(140, 64, 24, 4, "semisolid")
-
 
             stage.spawnDist = nil
             stage.blastZone = {l=0,r=240,t=-30,b=151}
@@ -1190,14 +1238,16 @@ stage = {
             -- layout based on brawl smashville
             stage.name = "cc_ville"
             
-            stage.addPlatform(80, 100, 80, 16, "solid")
-            stage.addPlatform(88, 116, 64, 8, "solid")
+            stage.addPlatform(76, 100 - 4, 88, 16, "solid")
+            stage.addPlatform(84, 116 - 4, 72, 8, "solid")
+            -- stage.addPlatform(80, 100, 80, 16, "solid")
+            -- stage.addPlatform(88, 116, 64, 8, "solid")
             
             -- a single platform moves between the left and right side of the stage, stopping past the edge of the main stage
             -- // the platform is 24 units (3 tiles) above the main stage
-            p = objectSystem.createObject(moving_platform, 32 + 129, 76, 32)  -- TODO: hacky; should calculate initial position instead
-            p.ptA = {x = 32, y = 76}
-            p.ptB = {x = 32 + 144, y = 76}
+            p = objectSystem.createObject(moving_platform, 32 + 129, 76 - 4, 32)  -- TODO: hacky; should calculate initial position instead
+            p.ptA = {x = 32, y = 76 - 4}
+            p.ptB = {x = 32 + 144, y = 76 - 4}
             p.movement_duration = 210  -- 7 sec travel time
             p.movement_delay = 30      -- 1 sec pause
             p.movement_timer = 170     -- // init mid-movement to avoid characters landing on top of the platform at match start
@@ -1220,7 +1270,7 @@ stage = {
             -- layout based on p+ green hill zone / roa2 aetherian forest
             stage.name = "cc_hillzone"
             
-            stage.addPlatform(80, 100, 80, 48, "solid")
+            stage.addPlatform(80, 100, 80, 60, "solid")
             
             -- a single platform swings in an arc (half circle) above the main stage
             -- https://help.altair.com/2023/panopticon/authoring/onlinehelp/DrawingaCirclewithCubicBzierCurves.htm
