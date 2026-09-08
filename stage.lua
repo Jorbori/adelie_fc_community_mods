@@ -212,7 +212,7 @@ rosetta_sandstorm = function()
                 if p.c_rand < 0.8 then
                     c[1], c[2], c[3] = util.color(15)
                 else
-                    c[1], c[2], c[3] = 255/255, 157/255, 129/255
+                    c[1], c[2], c[3] = util.color(143)
                 end
                 love.graphics.setColor(c)
                 love.graphics.rectangle("fill", math.floor(p.x), math.floor(p.y), size, size)
@@ -281,9 +281,9 @@ rosetta_clouds = function()
             draw = function(p)
                 local c = {}
                 if p.c_rand < 0.5 then
-                    c[1], c[2], c[3] = util.color(2)
+                    c[1], c[2], c[3] = util.color(130)
                 else
-                    c[1], c[2], c[3] = util.color(14)
+                    c[1], c[2], c[3] = util.color(133)
                 end
                 love.graphics.setShader(pico8fillpShader)
                 local pattern = hexToBitmaskArray(0x5A5A)  -- checkerboard pattern (0x5A5A <-> 0b01011010010110101)
