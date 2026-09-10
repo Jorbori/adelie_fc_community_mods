@@ -847,8 +847,15 @@ stage = {
                     stage.addPlatform(cx + 32, cy + 32, 16, 16, "solid")
                     stage.addPlatform(cx + 0, cy + 32, 32, 4, "semisolid")
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Falling Brick Chunk
@@ -856,16 +863,30 @@ stage = {
                     stage.addPlatform(cx + 32, cy + 32, 16, 8, "solid")
                     stage.addPlatform(cx + 0, cy + 16, 32, 4, "semisolid")
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Classic Chunk
                 elseif(curChunk == 3) then
                     stage.addPlatform(cx + 16, cy + 32, 32, 4, "semisolid")
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(7)})
                 -- Lava Chunk
@@ -876,8 +897,15 @@ stage = {
 
                     --objectSystem.createObject(block, cx + 8, cy + 24, 1)
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(5)})
                 end
@@ -900,8 +928,15 @@ stage = {
                     stage.addPlatform(cx + 0, cy + 32, 48, 16, "solid")
                     stage.addPlatform(cx + 16, cy + 24, 16, 8, "solid")
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Sand Chunk
@@ -920,8 +955,15 @@ stage = {
 
                     make_flag_custom(cx + 21, cy + 24, false, util.color(11)).secret = enable_secret
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {162/255, 136/255, 121/255})
                 -- Grass Chunk
@@ -930,8 +972,15 @@ stage = {
                     stage.addPlatform(cx + 32, cy + 32, 16, 16, "solid")
                     stage.addPlatform(cx + 16, cy + 32, 16, 4, "semisolid")
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(9)})
                 -- Snow Chunk
@@ -941,8 +990,15 @@ stage = {
 
                     objectSystem.createObject(snowball, cx + 16, cy + 8, 1)
 
+<<<<<<< Updated upstream
                     table.insert(particles_mg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_bg.png"), p.x, p.y) end })
                     table.insert(particles_fg, { x = cx, y = cy, update = function(p) end, draw = function(p) love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_fg.png"), p.x, p.y) end })
+=======
+                    love.graphics.setCanvas(temp_canvas_bg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_bg.png"), cx, cy)
+                    love.graphics.setCanvas(temp_canvas_fg)
+                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_fg.png"), cx, cy)
+>>>>>>> Stashed changes
 
                     table.insert(snowflakeColors, {util.color(7)})
                 end
@@ -953,8 +1009,16 @@ stage = {
 
             stage.spawnDist = 22
             stage.blastZone = {l=0,r=240,t=-30,b=151}
+<<<<<<< Updated upstream
             stage.bgImage = love.graphics.newImage("resources/graphics/stages/blank.png")
             stage.fgImage = love.graphics.newImage("resources/graphics/stages/blank.png")
+=======
+            
+            love.graphics.setCanvas()  -- reset
+            
+            stage.bgImage = nil--love.graphics.newImage(temp_canvas_bg:newImageData())
+            stage.fgImage = nil--love.graphics.newImage(temp_canvas_fg:newImageData())
+>>>>>>> Stashed changes
 
             stage.bgColor = nil
             stage.bgShader = nil
