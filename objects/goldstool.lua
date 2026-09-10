@@ -310,11 +310,11 @@ goldstool = {
 
     set_up_riders = function(this, riders)
         for _, o in ipairs(objects) do
-            if o ~= this and o:bottom() >= this.y - 4 and o:bottom() <= this.y and o:left() <= this:right() and o:right() >= this:left() and o.type.name ~= "cloud" then
+            if o ~= this and o:bottom() >= this.y - 4 and o:bottom() <= this.y and o:left() <= this:right() and o:right() >= this:left() and o.type.name ~= "cloud" and o.type.name ~= "moving_platform" then
                 table.insert(riders, o)
                 if o.semisolid then
                     for _, p in ipairs(objects) do
-                        if p ~= o and p:bottom() >= o.y - 4 and p:bottom() <= o.y and p:left() <= o:right() and p:right() >= o:left() and p.type.name ~= "cloud" then
+                        if p ~= o and p:bottom() >= o.y - 4 and p:bottom() <= o.y and p:left() <= o:right() and p:right() >= o:left() and p.type.name ~= "cloud" and o.type.name ~= "moving_platform" then
                             table.insert(riders, p)
                         end
                     end

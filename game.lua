@@ -20,13 +20,91 @@ frameCounter = 1
 objects = {}
 hitboxes = {}
 history = {}
-particles_fg = {}
+
+--
+-- particles_fg, particles_mg, particles_bg = nil
+--
 
 matchState = "STARTING" -- STARTING, PLAYING, GAMEOVER
 gameOverTimer = 60
 gameStartTimer = 60
 gameQuitTimer = 43
 winner = nil
+
+-- intercept calls to global table.insert function and redirect calls to the metatable wrapper
+-- // hacky, but for an unofficial fix this avoids making a ton of edits wherever the particle tables are updated
+local default_table_insert = table.insert
+
+table.insert = function(t, ...)
+    local mt = getmetatable(t)
+    if mt and mt.__is_unique_keys_table then
+        local args = {...}
+        local value = args[1]  -- breaks on calls to table.insert(t, key, val)
+        return t:insert(value)
+    end
+    return default_table_insert(t, ...)
+end
+
+-- metatable wrapper for table that ensures
+--   1) every value has a unique key, and
+--   2) keys are not reused if a value is removed
+--      => if every particle has a unique key, we can use the keys to track particles and avoid deep copying entire tables into history
+function unique_keys_table()
+    local data = {}      -- actual table where values are stored
+    local curr_key = 1   --
+    local new_keys = {}  --
+    
+    local methods = {
+        insert = function(self, value)
+            if value == nil then return nil end
+            new_keys[#new_keys + 1] = curr_key
+            data[curr_key] = value
+            curr_key = curr_key + 1
+        end,
+        
+        remove = function(self, key)
+            if key == nil then return nil end
+            local temp = data[key]
+            if temp ~= nil then
+                data[key] = nil
+            end
+            return temp
+        end,
+        
+        --
+        all = function(self)
+            return next, data, nil
+        end,
+        
+        reset_new_keys = function(self)
+            local temp, temp_size = new_keys, #new_keys
+            new_keys = {}
+            return temp
+        end,
+    }
+    
+    local proxy = {}
+    
+    local metatable = {
+        __is_unique_keys_table = true,
+        
+        -- __newindex = function(self, key, value)  -- not sure if needed?
+            -- if data[key] ~= nil then
+                -- error("unsupported operation")
+            -- end
+            -- data[key] = value
+        -- end,
+        
+        __index = function(t, key)
+            if methods[key] then
+                return methods[key]
+            end
+            return data[key]
+        end,
+    }
+    
+    return setmetatable(proxy, metatable)
+end
 
 game = {
     mode = "ONLINE",
@@ -44,10 +122,9 @@ game = {
         objects = {}
         hitboxes = {}
         history = {}
-        particles_bg = {}
-        -- particles_mg placed here for the goldstool's beam effect, as it needs to happen in front of background elements but behind players
-        particles_mg = {}
-        particles_fg = {}
+        particles_bg = unique_keys_table()
+        particles_mg = unique_keys_table()  -- particles_mg placed here for the goldstool's beam effect, as it needs to happen in front of background elements but behind players
+        particles_fg = unique_keys_table()
 
         frameCounter = 1
         frontierFrame = 1
@@ -87,6 +164,7 @@ game = {
         game.saveFrame()
     end,
     update = function()
+        
         if game.startupDelay and game.startupDelay > 0 then
             game.startupDelay = game.startupDelay - 1
             return
@@ -156,19 +234,19 @@ game = {
             game.jumpToFrame(target)
         end
 
-        for i = #particles_bg,1,-1 do
-            if particles_bg[i]:update() then
-                table.remove(particles_bg, i)
+        for key, p in particles_bg:all() do
+            if p:update() then
+                particles_bg:remove(key)
             end
         end
-        for i = #particles_mg,1,-1 do
-            if particles_mg[i]:update() then
-                table.remove(particles_mg, i)
+        for key, p in particles_mg:all() do
+            if p:update() then
+                particles_mg:remove(key)
             end
         end
-        for i = #particles_fg,1,-1 do
-            if particles_fg[i]:update() then
-                table.remove(particles_fg, i)
+        for key, p in particles_fg:all() do
+            if p:update() then
+                particles_fg:remove(key)
             end
         end
     end,
@@ -181,10 +259,9 @@ game = {
             love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
         end
 
-        for _,p in ipairs(particles_bg) do p:draw() end
+        for _,p in particles_bg:all() do p:draw() end
         stage.draw_bg()
-
-        for _,p in ipairs(particles_mg) do p:draw() end
+        for _,p in particles_mg:all() do p:draw() end
 
         local previous_canvas = love.graphics.getCanvas()
 
@@ -214,12 +291,12 @@ game = {
         love.graphics.setBlendMode("alpha", "alphamultiply")
 
         stage.draw_fg()
-        for _,p in ipairs(particles_fg) do p:draw() end
+        for _,p in particles_fg:all() do p:draw() end
 
         hitbox.drawAll()
     end,
     spawnExplosion = function(x, y, side, color)
-        if game.mode == "REPLAY" or frameCounter >= frontierFrame then
+        if network.moddedConnection or ((not network.moddedConnection) and (game.mode == "REPLAY" or frameCounter >= frontierFrame)) then
             local sparks = {}
             for i = 1,15 do
                 table.insert(sparks, {
@@ -312,7 +389,7 @@ game = {
         end
     end,
     init_smoke = function(x, y)
-        if game.mode == "REPLAY" or frameCounter >= frontierFrame then
+        if network.moddedConnection or ((not network.moddedConnection) and (game.mode == "REPLAY" or frameCounter >= frontierFrame)) then
             table.insert(particles_fg, {
                 x = x + love.math.random() * 2 - 1,
                 y = y + love.math.random() * 2 - 1,
@@ -585,6 +662,9 @@ game = {
         history[frameCounter] = util.deepcopy({
             objects = objects,
             hitboxes = hitboxes,
+            particles_bg_new = particles_bg:reset_new_keys(),
+            particles_mg_new = particles_mg:reset_new_keys(),
+            particles_fg_new = particles_fg:reset_new_keys(),
             matchState = matchState,
             gameOverTimer = gameOverTimer,
             gameStartTimer = gameStartTimer,
@@ -596,6 +676,18 @@ game = {
         assert(not (frame < 1 or history[frame] == nil), "Error: attempting to jump to frame " .. frame)
 
         while frameCounter > frame do
+            print("test : "..#particles_fg)
+            -- cull any particles that were created after the frame that we're rolling back to
+            -- // particles can't cause desync so no need to maintain an alternate logic path for modded connections
+            for _, key in pairs(history[frameCounter].particles_bg_new) do
+                particles_bg:remove(key)
+            end
+            for _, key in pairs(history[frameCounter].particles_mg_new) do
+                particles_mg:remove(key)
+            end
+            for _, key in pairs(history[frameCounter].particles_fg_new) do
+                particles_fg:remove(key)
+            end
             table.remove(history)
             frameCounter = frameCounter - 1
         end
