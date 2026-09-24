@@ -1048,9 +1048,9 @@ stage = {
                 
                 -- Control Center Chunk
                 if(curChunk == 1) then
-                    stage.addPlatform(cx + 32, cy + 32, 16, 16, "solid")
-                    stage.addPlatform(cx + 0, cy + 32, 32, 4, "semisolid")
-
+                    stage.addPlatform(cx + 32, cy + 24, 16, 8, "solid")
+                    stage.addPlatform(cx + 16, cy + 32, 32, 16, "solid")
+                    
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
@@ -1059,8 +1059,8 @@ stage = {
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Falling Brick Chunk
                 elseif(curChunk == 2) then
-                    stage.addPlatform(cx + 32, cy + 32, 16, 8, "solid")
-                    stage.addPlatform(cx + 0, cy + 16, 32, 4, "semisolid")
+                    stage.addPlatform(cx + 32, cy + 0, 16, 24, "solid")
+                    stage.addPlatform(cx + 0, cy + 24, 32, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_bg.png"), cx, cy)
@@ -1070,7 +1070,9 @@ stage = {
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Classic Chunk
                 elseif(curChunk == 3) then
-                    stage.addPlatform(cx + 16, cy + 32, 32, 4, "semisolid")
+                    stage.addPlatform(cx + 0, cy + 0, 16, 8, "solid")
+                    stage.addPlatform(cx + 16, cy + 0, 16, 4, "semisolid")
+                    stage.addPlatform(cx + 32, cy + 24, 16, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_bg.png"), cx, cy)
@@ -1080,9 +1082,9 @@ stage = {
                     table.insert(snowflakeColors, {util.color(7)})
                 -- Lava Chunk
                 elseif(curChunk == 4) then
+                    stage.addPlatform(cx + 16, cy + 0, 16, 16, "solid")
                     stage.addPlatform(cx + 0, cy + 0, 16, 4, "semisolid")
-                    stage.addPlatform(cx + 16, cy + 16, 32, 4, "semisolid")
-                    stage.addPlatform(cx + 0, cy + 32, 48, 4, "semisolid")
+                    stage.addPlatform(cx + 32, cy + 16, 16, 4, "semisolid")
 
                     --objectSystem.createObject(block, cx + 8, cy + 24, 1)
 
@@ -1110,7 +1112,8 @@ stage = {
                 -- Grey Chunk
                 if(curChunk == 1) then
                     stage.addPlatform(cx + 0, cy + 32, 48, 16, "solid")
-                    stage.addPlatform(cx + 16, cy + 24, 16, 8, "solid")
+                    stage.addPlatform(cx + 16, cy + 16, 16, 16, "solid")
+                    stage.addPlatform(cx + 32, cy + 0, 16, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_bg.png"), cx, cy)
@@ -1120,9 +1123,9 @@ stage = {
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Sand Chunk
                 elseif(curChunk == 2) then
-                    stage.addPlatform(cx + 16, cy + 32, 16, 16, "solid")
-                    stage.addPlatform(cx + 32, cy + 16, 16, 32, "solid")
-                    stage.addPlatform(cx + 0, cy + 32, 16, 4, "semisolid")
+                    stage.addPlatform(cx + 16, cy + 16, 16, 16, "solid")
+                    stage.addPlatform(cx + 32, cy + 0, 16, 32, "solid")
+                    stage.addPlatform(cx + 0, cy + 16, 16, 4, "semisolid")
 
                     local enable_secret = false
 
@@ -1132,7 +1135,7 @@ stage = {
                         enable_secret = true
                     end
 
-                    make_flag_custom(cx + 21, cy + 24, false, util.color(11)).secret = enable_secret
+                    make_flag_custom(cx + 21, cy + 8, false, util.color(11)).secret = enable_secret
 
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_bg.png"), cx, cy)
@@ -1142,9 +1145,10 @@ stage = {
                     table.insert(snowflakeColors, {162/255, 136/255, 121/255})
                 -- Grass Chunk
                 elseif(curChunk == 3) then
-                    stage.addPlatform(cx + 0, cy + 32, 16, 16, "solid")
-                    stage.addPlatform(cx + 32, cy + 32, 16, 16, "solid")
-                    stage.addPlatform(cx + 16, cy + 32, 16, 4, "semisolid")
+                    stage.addPlatform(cx + 0, cy + 32, 8, 16, "solid")
+                    stage.addPlatform(cx + 40, cy + 32, 8, 16, "solid")
+                    stage.addPlatform(cx + 8, cy + 32, 32, 4, "semisolid")
+                    stage.addPlatform(cx + 0, cy + 0, 32, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_bg.png"), cx, cy)
@@ -1154,7 +1158,9 @@ stage = {
                     table.insert(snowflakeColors, {util.color(9)})
                 -- Snow Chunk
                 elseif(curChunk == 4) then
-                    stage.addPlatform(cx + 0, cy + 32, 48, 16, "solid")
+                    stage.addPlatform(cx + 0, cy + 32, 8, 8, "solid")
+                    stage.addPlatform(cx + 40, cy + 32, 8, 8, "solid")
+                    stage.addPlatform(cx + 0, cy + 40, 48, 8, "solid")
                     stage.addPlatform(cx + 16, cy + 16, 16, 4, "semisolid")
 
                     objectSystem.createObject(snowball, cx + 16, cy + 8, 1)
@@ -1174,7 +1180,7 @@ stage = {
             love.graphics.setCanvas()  -- reset
 
             stage.spawnDist = 22
-            stage.blastZone = {l=0,r=240,t=-30,b=151}
+            stage.blastZone = {l=0,r=240,t=-46,b=151}
             
             love.graphics.setCanvas()  -- reset
             
