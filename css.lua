@@ -7,13 +7,17 @@ MOD_VERSION = 100
 -- The Maximum Value that can be used as a seed
 SEED_MAX = 9999
 
-NUM_PLAYER_SKINS = {
+NUM_PLAYER_SKINS_MODDED = {
     maddy = 4,
     gem_maddy = 4,
     heavy_maddy = 4,
     lani = 4,
     stepstools = 4,
     roundelie = 3  -- TODO: rosetta skin is temporarily disabled until it's reworked
+}
+NUM_PLAYER_SKINS_VANILLA = {
+    maddy = 4,
+    lani = 4
 }
 AVAILABLE_CHARS = {"maddy", "gem_maddy", "heavy_maddy", "lani", "stepstools","roundelie"}
 VANILLA_CHARS = {"maddy", "lani"}
@@ -114,7 +118,7 @@ css = {
         end
 
         if not css.localReady then
-            local n_skins = NUM_PLAYER_SKINS[css.player_char]
+            local n_skins = network.moddedConnection or css.mode == "TRAINING" and NUM_PLAYER_SKINS_MODDED[css.player_char] or NUM_PLAYER_SKINS_VANILLA[css.player_char]
             local character_set = (network.moddedConnection == true or css.mode == "TRAINING") and AVAILABLE_CHARS or VANILLA_CHARS
             local updated = false
 
@@ -148,7 +152,7 @@ css = {
                 end
             end
         elseif css.mode == "TRAINING" then
-            local n_skins = NUM_PLAYER_SKINS[css.cpu_char]
+            local n_skins = NUM_PLAYER_SKINS_MODDED[css.cpu_char]
             local character_set = CPU_CHARS
             local updated = false
 
@@ -322,9 +326,7 @@ css = {
                 -- Ensure connectionID is a number and not the default -1
                 local myID = tonumber(connectionID) or -1
 
-                -- STICKY HANDSHAKE:
-                -- If we see skin 1000 from someone else, lock moddedConnection to 1000.
-                -- We do NOT include an 'else' here, so the state persists.
+                -- Mod Handshake
                 if math.floor(pSkin / (SEED_MAX + 1)) == MOD_VERSION and pID ~= myID and myID ~= -1 and network.moddedConnection ~= true then
                     -- flip modded connection on
                     network.moddedConnection = true
