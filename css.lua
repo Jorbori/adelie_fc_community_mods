@@ -118,7 +118,7 @@ css = {
         end
 
         if not css.localReady then
-            local n_skins = network.moddedConnection or css.mode == "TRAINING" and NUM_PLAYER_SKINS_MODDED[css.player_char] or NUM_PLAYER_SKINS_VANILLA[css.player_char]
+            local n_skins = (network.moddedConnection or css.mode == "TRAINING") and NUM_PLAYER_SKINS_MODDED[css.player_char] or NUM_PLAYER_SKINS_VANILLA[css.player_char]
             local character_set = (network.moddedConnection == true or css.mode == "TRAINING") and AVAILABLE_CHARS or VANILLA_CHARS
             local updated = false
 
