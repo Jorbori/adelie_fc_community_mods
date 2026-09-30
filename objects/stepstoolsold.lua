@@ -295,12 +295,9 @@ stepstools = {
             if this.holding and this.holding.flying and this.holding.flystarttimer <= 0 then
                 this.movementFlightLock = true
                 
-                -- ONLY force a drop if we hit a CEILING or a WALL. 
-                -- We ignore the floor (is_solid(0, 1)) because you start on the floor.
                 local hit_ceiling = this:is_solid(0, -1) or this.holding:is_solid(0, -1)
                 local hit_wall = this:is_solid(util.sign(this.vx), 0)
 
-                -- Use <= 0 so it works with the goldstool's countdown
                 if (hit_ceiling or hit_wall) and (this.holding.flylock <= 0) then
                     this.holding.held = false
                     this.holding.collides = true
