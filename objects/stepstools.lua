@@ -550,6 +550,7 @@ stepstools = {
         for _, sw in ipairs(this.sweats) do
             love.graphics.rectangle("fill", math.floor(sw.x), math.floor(sw.y), 1, 1)
         end
+        love.graphics.setColor(1, 1, 1)
     end,
 
     draw = function(this)
@@ -580,6 +581,13 @@ stepstools = {
         sprites.draw(this.spr, this.x + cx, this.y, 0, this.facing, 1, cx, 0)
 
         stepstools.draw_sweats(this)
+
+        if this.connectionID == connectionID then
+            local px = math.floor(this.x)
+            local py = math.floor(this.y)
+            love.graphics.rectangle("fill", px + 3, py - 6, 3, 1)
+            love.graphics.rectangle("fill", px + 4, py - 5, 1, 1)
+        end
 
         love.graphics.setShader()
         love.graphics.setColor(1, 1, 1)
