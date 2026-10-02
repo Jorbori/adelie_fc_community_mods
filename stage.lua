@@ -1309,6 +1309,7 @@ stage = {
     },
 
     init = function(stageIdx)
+        stage.seed = localRandom.combo_seed
         stage.platforms = {}
         stageIdx = stageIdx or 1
         if stage.layouts[stageIdx] then

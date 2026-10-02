@@ -17,7 +17,7 @@ local function decodeInput(str)
     }
 end
 
-function replay.save(stageIdx, playerData, finalFrame)
+function replay.save(stageIdx, seed, playerData, finalFrame)
     love.filesystem.createDirectory("replays")
     local filename = "replays/replay_" .. os.time() .. ".txt"
 
@@ -25,7 +25,7 @@ function replay.save(stageIdx, playerData, finalFrame)
     local p1 = playerData[1]
     local p2 = playerData[2]
     local data = tostring(stageIdx) .. "\n"
-    data = data .. p1.id .. "," .. p1.char .. "," .. p1.skin .. "," .. p1.username .. "\n"
+    data = data .. tostring(seed) .. "," .. p1.char .. "," .. p1.skin .. "," .. p1.username .. "\n"
     data = data .. p2.id .. "," .. p2.char .. "," .. p2.skin .. "," .. p2.username .. "\n"
 
     -- inputs
