@@ -79,13 +79,13 @@ goldstool = {
             return false
         end
 
-        this.on_release = function()
+        this.on_release = function(this)
             this.thrown_timer = 30
         end
 
         this.set_up_riders = function(riders)
             for _, o in ipairs(objects) do
-                if o ~= this and o:bottom() >= this.y - 4 and o:bottom() <= this.y and o:left() <= this:right() and o:right() >= this:left() and o.type.name ~= "cloud" and o.type.name ~= "moving_platform" then
+                if o.connectionID ~= this.connectionID and o:bottom() >= this.y - 4 and o:bottom() <= this.y and o:left() <= this:right() and o:right() >= this:left() and o.type.name ~= "cloud" and o.type.name ~= "moving_platform" then
                     if not util.tableContains(riders, o) then table.insert(riders, o) end
                     if o.set_up_riders then
                         o.set_up_riders(riders)

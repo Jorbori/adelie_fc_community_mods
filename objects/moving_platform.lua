@@ -67,7 +67,7 @@ moving_platform = {
         local px, py = this.x, this.y
         local riders = {}
         for _, o in ipairs(objects) do
-            if o ~= this and o:bottom() == this.y - 1 and o:left() <= this:right() and o:right() >= this:left() then
+            if o.connectionID ~= this.connectionID and o:bottom() == this.y - 1 and o:left() <= this:right() and o:right() >= this:left() then
                 if not util.tableContains(riders, o) then table.insert(riders, o) end
                 if o.set_up_riders then
                     o.set_up_riders(riders)

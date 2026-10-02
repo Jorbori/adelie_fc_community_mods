@@ -5,7 +5,7 @@ lani = {
     init = function(this, skin)
         this.connectionID = nil
 
-        this.block = objectSystem.createObject(goldstool, this.x, this.y - 10, skin, "_")
+        this.block = objectSystem.createObject(block, this.x, this.y - 10, skin, "_")
 
 
         local player_skins = {
