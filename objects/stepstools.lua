@@ -27,6 +27,8 @@ stepstools = {
 
         this.holding = nil
 
+        this.goldstool = objectSystem.createObject(goldstool, this.x, this.y - 20 --[[stage.blastZone.b + 10]], skin, this)
+
         this.p_jump = false
         this.p_dash = false
         this.was_on_ground = false
@@ -35,6 +37,8 @@ stepstools = {
 
         this.kicks = 1
         this.kick_cooldown = 0
+
+        this.hold_chain = 0
 
         this.animations = {
             idle = {frames = {1}, speed = 1},
@@ -49,12 +53,13 @@ stepstools = {
         this.anim_frame = 1
         this.anim_timer = 0
 
+        this.sweats = {}
+
         this.body_hb = nil
         this.body_timer = 0
 
         this.respawn_timer = 0
         this.invincible_timer = 0
-        this.dash_cooldown = 0
         this.freeze = 0
 
         this.check_snowballs = function(this)
@@ -87,13 +92,14 @@ stepstools = {
                                 this.vy = -k * 4.7
                                 o.vy = -k * 2
                                 this.kicks = 1
+                                this.hold_chain = 0
                             else
                                 this.vy = kick_target_x == 0 and 0 or -2
                                 o.vy = kick_target_x == 0 and -3 or -2
                             end
 
                             this.vx = this.vx * -0.5
-                            this.kick_cooldown = 4
+                            this.kick_cooldown = 3
 
                             o.throwerID = this.connectionID
                             o.thrown_timer = 10
@@ -107,6 +113,7 @@ stepstools = {
                             this.jbuffer = 0
                             this.kick_cooldown = 0
                             this.kicks = 1
+                            this.hold_chain = 0
                             
                             if this.p_jump or inputSource.getKeyDown(this.connectionID, "b1") then
                                 this.vy = -3.36
@@ -159,6 +166,30 @@ stepstools = {
         return false
     end,
 
+    update_sweats = function(this)
+        -- exhaustion effect
+        if this.hold_chain == 3 then
+            if frameCounter % 3 == 0 then
+                table.insert(this.sweats, {
+                    x = this.x + 4 + math.random(-2, 2),
+                    y = this.y + math.random(0, 4),
+                    vy = -0.5,
+                    t = 8
+                })
+            end
+        end
+        
+        for i = #this.sweats, 1, -1 do
+            local sw = this.sweats[i]
+            sw.y = sw.y + sw.vy
+            sw.vy = sw.vy + 0.1
+            sw.t = sw.t - 1
+            if sw.t <= 0 then
+                table.remove(this.sweats, i)
+            end
+        end
+    end,
+
     update_physics = function(this, id, h_input, v_input)
         -- hitstun
         if this.hitstun > 0 then
@@ -195,6 +226,7 @@ stepstools = {
             if on_ground then
                 if not this.holding then stepstools.set_state_default(this) end
                 this.kicks = 1
+                this.hold_chain = 0
                 this.grace = 6
                 if this.vy < 0 then
                     love.audio.play("maddy_clip", "static")
@@ -220,7 +252,7 @@ stepstools = {
             stepstools.throw(this, id)
         elseif inputSource.getKeyDown(id, "down") then
             local pickup = stepstools.available_pickup(this)
-            if pickup ~= nil then
+            if pickup ~= nil and this.hold_chain < 3 then
                 stepstools.pickup(this, pickup)
             else
                 stepstools.call_goldstool(this)
@@ -230,24 +262,29 @@ stepstools = {
         end
     end,
 
-    shift_out = function(o)
-        local x, y = 0, 0
+    snowball_throw_handling = function(o, dir)
+        if dir < 0 then o.vx = math.abs(o.vx) * -1
+        elseif dir > 0 then o.vx = math.abs(o.vx) end
+    end,
 
-        if not o:is_solid(0, 8) then x, y = 0, 1 end
-        if not o:is_solid(-8, 0) then x, y = -1, 0 end
-        if not o:is_solid(8, 0) then x, y = 1, 0 end
+    shift_out = function(o)
+        local x, y = 1, 1
+
+        if not o:is_solid(0, 8, true) then x, y = 0, 1 end
+        if not o:is_solid(-8, 0, true) then x, y = -1, 0 end
+        if not o:is_solid(8, 0, true) then x, y = 1, 0 end
 
         if x == 0 and y == 0 then
-            if not o:is_solid(8, 8) then x, y = 1, 1 end
-            if not o:is_solid(-8, 8) then x, y = -1, 1 end
+            if not o:is_solid(8, 8, true) then x, y = 1, 1 end
+            if not o:is_solid(-8, 8, true) then x, y = -1, 1 end
         end
 
-        while o:is_solid(0, 0) do
+        while o:is_solid(0, 0, true) do
             o.x = o.x + x
             o.y = o.y + y
         end
 
-        if x ~= 0 then o.vx = o.vx * x end
+        if o.type.name == "snowball" then stepstools.snowball_throw_handling(o, x) end
     end,
 
     throw = function(this, id)
@@ -256,7 +293,7 @@ stepstools = {
         pickup.vx = inputSource.getKeyDown(id, "left") and -4 or inputSource.getKeyDown(id, "right") and 4 or (inputSource.getKeyDown(id, "up") or inputSource.getKeyDown(id, "down")) and 0 or this.facing < 0 and -4 or 4
         pickup.vy = inputSource.getKeyDown(id, "down") and 0 or inputSource.getKeyDown(id, "up") and -3 or -1
 
-        stepstools.shift_out(pickup)
+        if pickup:is_solid(0, 0, true) then stepstools.shift_out(pickup) end
         
         pickup:on_release(pickup.vx ~= 0)
 
@@ -275,6 +312,8 @@ stepstools = {
         this.state = "holding"
         this.holding = o
 
+        this.hold_chain = this.hold_chain + 1
+
         o.held = true
 
         -- boost
@@ -288,7 +327,7 @@ stepstools = {
     end,
 
     call_goldstool = function(this)
-        local sb = objectSystem.createObject(snowball, this.x, this.y - 10)
+        stepstools.pickup(this, this.goldstool)
     end,
 
     kick = function(this, id)
@@ -429,6 +468,8 @@ stepstools = {
             this.rem.y = 0
             this.kicks = 1
             this.kick_cooldown = 0
+            this.hold_chain = 0
+            this.sweats = {}
             stepstools.set_state_default(this)
 
             if this.stocks > 0 then
@@ -466,6 +507,8 @@ stepstools = {
         -- respawn
         if stepstools.update_respawn(this) then return end
 
+        stepstools.update_sweats(this)
+
         local h_input = (inputSource.getKeyDown(id, "right") and 1 or 0) - (inputSource.getKeyDown(id, "left") and 1 or 0)
         local v_input = (inputSource.getKeyDown(id, "down") and 1 or 0) - (inputSource.getKeyDown(id, "up") and 1 or 0)
 
@@ -502,6 +545,13 @@ stepstools = {
         if hb == this.body_hb then this.body_timer = 4 end
     end,
 
+    draw_sweats = function(this)
+        love.graphics.setColor(41/255, 173/255, 255/255, 1)
+        for _, sw in ipairs(this.sweats) do
+            love.graphics.rectangle("fill", math.floor(sw.x), math.floor(sw.y), 1, 1)
+        end
+    end,
+
     draw = function(this)
         if not this.active and this.stocks <= 0 then return end
         if this.respawn_timer > 0 then return end
@@ -528,6 +578,8 @@ stepstools = {
         end
 
         sprites.draw(this.spr, this.x + cx, this.y, 0, this.facing, 1, cx, 0)
+
+        stepstools.draw_sweats(this)
 
         love.graphics.setShader()
         love.graphics.setColor(1, 1, 1)
