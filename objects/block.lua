@@ -62,12 +62,12 @@ block = {
             this.thrown_timer = 30
         end
 
-        this.set_up_riders = function(riders)
+        this.set_up_riders = function(this, riders)
             for _, o in ipairs(objects) do
                 if o.connectionID ~= this.connectionID and o:bottom() >= this.y - 4 and o:bottom() <= this.y and o:left() <= this:right() and o:right() >= this:left() and o.type.name ~= "cloud" and o.type.name ~= "moving_platform" then
                     if not util.tableContains(riders, o) then table.insert(riders, o) end
                     if o.set_up_riders then
-                        o.set_up_riders(riders)
+                        o:set_up_riders(riders)
                     end
                 end
             end
@@ -98,12 +98,26 @@ block = {
         end
     end,
 
+    -- this function is for handling a bug where if lani hits the stool with her grapple, it is still considered held by her until she takes damage
+    lani_bug_handling = function(this, lani)
+        if lani.state == 0 and not lani.holding then
+            lani:release_holding(this, this.vx, this.vy, false)
+            lani.grapple_hit = false
+            return false
+        end
+
+        return true
+    end,
+
     manage_hold_state = function(this)
         local is_actually_held = false
+
         for _, obj in ipairs(objects) do
             if obj.holding == this or obj.grapple_hit == this then
                 this.throwerID = obj.connectionID
                 is_actually_held = true
+
+                if obj.type.name == "lani" then is_actually_held = goldstool.lani_bug_handling(this, obj) end --delete this if the lani bug gets fixed
                 break
             end
         end
@@ -158,7 +172,7 @@ block = {
         local riders = {}
 
         -- Set Up Riders
-        this.set_up_riders(riders)
+        this:set_up_riders(riders)
 
         -- Move Function
         if not this.held then this:move(this.vx, this.vy) end

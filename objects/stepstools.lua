@@ -27,7 +27,7 @@ stepstools = {
 
         this.holding = nil
 
-        this.goldstool = objectSystem.createObject(goldstool, this.x, this.y - 20 --[[stage.blastZone.b + 10]], skin, this)
+        this.goldstool = objectSystem.createObject(goldstool, this.x, stage.blastZone.b + 10, skin, this)
 
         this.p_jump = false
         this.p_dash = false
@@ -208,6 +208,9 @@ stepstools = {
             local on_ground = ground_hit ~= false
             local on_semisolid = ground_hit and (ground_hit.type == "semisolid" or ground_hit.semisolid)
 
+            local available_pickup = stepstools.available_pickup(this)
+            local on_semisolid_object = on_semisolid and available_pickup and available_pickup.semisolid and not available_pickup:is_solid(0, 1)
+
             if on_ground and not this.was_on_ground then
                 game.init_smoke(this.x, this.y + 4)
             end
@@ -225,8 +228,8 @@ stepstools = {
 
             if on_ground then
                 if not this.holding then stepstools.set_state_default(this) end
+                if not on_semisolid_object then this.hold_chain = 0 end
                 this.kicks = 1
-                this.hold_chain = 0
                 this.grace = 6
                 if this.vy < 0 then
                     love.audio.play("maddy_clip", "static")
@@ -327,7 +330,7 @@ stepstools = {
     end,
 
     call_goldstool = function(this)
-        stepstools.pickup(this, this.goldstool)
+        goldstool.initiate_flight(this.goldstool)
     end,
 
     kick = function(this, id)
@@ -539,10 +542,53 @@ stepstools = {
         this.body_timer = this.body_timer - 1
     end,
 
+    crit_sparks = function(this, target, hb)
+        local direction = hb.dir or 1
+        -- tipper sparks
+        this.freeze = 6
+        target.freeze = 6
+        camera.shake(3, 3, 5)
+        for i = 1, 8 do
+            table.insert(particles_fg, {
+                x = target:hmid(),
+                y = target:vmid(),
+                vx = (math.random() * 8 - 4) + direction * 1.5,
+                vy = (math.random() * 8 - 4) - 1,
+                timer = 0,
+                duration = 10 + math.random(0, 10),
+                update = function(p)
+                    p.x = p.x + p.vx
+                    p.y = p.y + p.vy
+                    p.vx = p.vx * 0.85
+                    p.vy = p.vy * 0.85
+                    p.timer = p.timer + 1
+                    return p.timer >= p.duration
+                end,
+                draw = function(p)
+                    local fade = 1 - (p.timer / p.duration)
+                    if p.timer < 4 then
+                        love.graphics.setColor(1, 1, 1, fade)
+                    else
+                        love.graphics.setColor(255/255, 236/255, 39/255, fade)
+                    end
+                    love.graphics.rectangle("fill", math.floor(p.x), math.floor(p.y), 1, 1)
+                    if (p.vx * p.vx + p.vy * p.vy) > 1.5 then
+                        love.graphics.setColor(255/255, 163/255, 0/255, fade * 0.6)
+                        love.graphics.rectangle("fill", math.floor(p.x - p.vx * 0.6), math.floor(p.y - p.vy * 0.6), 1, 1)
+                    end
+                    love.graphics.setColor(1, 1, 1, 1)
+                end
+            })
+        end
+    end,
+
     on_hit_confirm = function(this, target, hb)
         -- stuff to do on hit confirm (e.g., pogoing?)
         camera.shake(1.5, 1.5, 2)
+        if hb.firstframe then stepstools.crit_sparks(this, target, hb) end
         if hb == this.body_hb then this.body_timer = 4 end
+        if hb == this.goldstool.body_hb then this.goldstool.body_timer = 4 end
+        if hb == this.goldstool.leftwing_hb or hb == this.goldstool.rightwing_hb then this.goldstool.wings_timer = 4 end
     end,
 
     draw_sweats = function(this)
