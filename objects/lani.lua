@@ -1057,9 +1057,6 @@ lani = {
             love.graphics.rectangle("fill", px + 4, py - 5, 1, 1)
         end
 
-        if this.state == 12 then love.graphics.rectangle("fill", this.x, this.y - 20, 4, 4) end
-        if this.grapple_hit ~= nil then love.graphics.rectangle("fill", this.x, this.y - 10, 4, 4) end
-
         love.graphics.setColor(1, 1, 1)
     end
 }
