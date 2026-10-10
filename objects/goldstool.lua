@@ -136,6 +136,9 @@ goldstool = {
             this.x = this.owner.x
             this.vx = 0
 
+            this.thrown_timer = 0
+            this.throwerID = nil
+
             this.screen_wraps = this.screen_wraps + 1
 
             goldstool.create_beam(this)
@@ -229,9 +232,10 @@ goldstool = {
     update_physics = function(this)
         local ground_hit = this:is_solid(0, 1)
         local on_ground = ground_hit ~= false
+        local vx_mod = math.abs(this.vx) > 4 and 2.5 or 1
 
         -- friction
-        this.vx = util.appr(this.vx, 0, 0.2 or 0.18)
+        this.vx = util.appr(this.vx, 0, (ground_hit and 0.2 or 0.18) * vx_mod)
 
         if on_ground and not this.was_on_ground then
         game.init_smoke(this.x, this.y + 4)
@@ -262,7 +266,7 @@ goldstool = {
         end
     end,
 
-    shift_out = function(o)
+    shift_out = function(o, dir)
         local x, y = 1, 1
 
         if not o:is_solid(0, 8, true) then x, y = 0, 1 end
@@ -282,7 +286,6 @@ goldstool = {
 
     check_for_force_drop = function(this)
         if this:is_solid(0, 0) and this:is_solid(0, 1) and this:is_solid(0, 2) and this:is_solid(0, 3) then
-            --if holder.type.name == "stepstools" then stepstools.set_state_default(holder) end
             this.holder.holding = nil
             goldstool.shift_out(this.holder)
             this.holder.vy = 0
@@ -307,8 +310,10 @@ goldstool = {
 
             this:moveWithoutCollide(this.vx - this.holder.vx, this.vy - this.holder.vy)
 
-            this.holder.x = this.x + dx
-            this.holder.y = this.y + dy
+            -- this.holder.x = this.x + dx
+            -- this.holder.y = this.y + dy
+
+            this.holder:move(this.x + dx, this.y + dy)
 
             goldstool.check_for_force_drop(this)
         end
