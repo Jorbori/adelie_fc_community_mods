@@ -93,6 +93,7 @@ stepstools = {
                                 o.vy = -k * 2
                                 this.kicks = 1
                                 this.hold_chain = 0
+                                stepstools.set_state_default(this)
                             else
                                 this.vy = kick_target_x == 0 and 0 or -2
                                 o.vy = kick_target_x == 0 and -3 or -2
@@ -114,6 +115,7 @@ stepstools = {
                             this.kick_cooldown = 0
                             this.kicks = 1
                             this.hold_chain = 0
+                            stepstools.set_state_default(this)
                             
                             if this.p_jump or inputSource.getKeyDown(this.connectionID, "b1") then
                                 this.vy = -3.36

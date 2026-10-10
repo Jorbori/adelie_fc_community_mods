@@ -266,16 +266,17 @@ goldstool = {
         end
     end,
 
-    shift_out = function(o, dir)
+    shift_out = function(o, up)
+        local dir = up and -1 or 1
         local x, y = 1, 1
 
-        if not o:is_solid(0, 8, true) then x, y = 0, 1 end
+        if not o:is_solid(0, 8 * dir, true) then x, y = 0, 1 * dir end
         if not o:is_solid(-8, 0, true) then x, y = -1, 0 end
         if not o:is_solid(8, 0, true) then x, y = 1, 0 end
 
         if x == 0 and y == 0 then
-            if not o:is_solid(8, 8, true) then x, y = 1, 1 end
-            if not o:is_solid(-8, 8, true) then x, y = -1, 1 end
+            if not o:is_solid(8, 8 * dir, true) then x, y = 1, 1 * dir end
+            if not o:is_solid(-8, 8 * dir, true) then x, y = -1, 1 * dir end
         end
 
         while o:is_solid(0, 0, true) do
@@ -310,10 +311,11 @@ goldstool = {
 
             this:moveWithoutCollide(this.vx - this.holder.vx, this.vy - this.holder.vy)
 
-            -- this.holder.x = this.x + dx
-            -- this.holder.y = this.y + dy
+            this.holder.x = this.x + dx
+            this.holder.y = this.y + dy
 
-            this.holder:move(this.x + dx, this.y + dy)
+            goldstool.shift_out(this.holder, true)
+            this.x = this.
 
             goldstool.check_for_force_drop(this)
         end
