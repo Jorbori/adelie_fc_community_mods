@@ -589,10 +589,13 @@ stepstools = {
     on_hit_confirm = function(this, target, hb)
         -- stuff to do on hit confirm (e.g., pogoing?)
         camera.shake(1.5, 1.5, 2)
-        if hb.firstframe then stepstools.crit_sparks(this, target, hb) end
         if hb == this.body_hb then this.body_timer = 4 end
         if hb == this.goldstool.body_hb then this.goldstool.body_timer = 4 end
         if hb == this.goldstool.leftwing_hb or hb == this.goldstool.rightwing_hb then this.goldstool.wings_timer = 4 end
+        if hb.firstframe then
+            stepstools.crit_sparks(this, target, hb)
+            this.goldstool.wings_timer = 8
+        end
     end,
 
     draw_sweats = function(this)
