@@ -494,6 +494,10 @@ stepstools = {
 
     handle_holding = function(this)
         if this.state == "holding" then
+            if not this.holding then 
+                stepstools.set_state_default(this)
+                return
+            end
             this.holding.x = this.x
             this.holding.y = this.y - 4
         end

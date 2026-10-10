@@ -653,7 +653,7 @@ lani = {
                         this.grapple_wave = util.appr(this.grapple_wave, 0, 0.6)
 
                         if not this.input_grapple or math.abs(obj.y - target_y) > 8 or util.sign((obj.x + 4) - (this.x + 4)) == -this.grapple_dir then
-                            this.state, this.grapple_retract = 0, true
+                            this.state, this.grapple_retract, this.grapple_hit = 0, true, nil
                             this:release_holding(obj, -this.grapple_dir * 5, 0, true)
                         end
                     end
@@ -1056,6 +1056,9 @@ lani = {
             love.graphics.rectangle("fill", px + 3, py - 6, 3, 1)
             love.graphics.rectangle("fill", px + 4, py - 5, 1, 1)
         end
+
+        if this.state == 12 then love.graphics.rectangle("fill", this.x, this.y - 20, 4, 4) end
+        if this.grapple_hit ~= nil then love.graphics.rectangle("fill", this.x, this.y - 10, 4, 4) end
 
         love.graphics.setColor(1, 1, 1)
     end

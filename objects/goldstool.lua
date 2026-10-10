@@ -31,6 +31,7 @@ goldstool = {
 
         this.screen_wraps = 0
 
+        this.holder = nil
         this.thrown_timer = 0
         this.held = false
         this.was_held = false
@@ -115,9 +116,8 @@ goldstool = {
 
     update_oob = function(this)
         if this:oob() and this.owner.respawn_timer == 0 then
-            local holder = goldstool.get_holder(this)
-            if this.held and holder then
-                holder.y = stage.blastZone.t - 20
+            if this.held and this.holder then
+                this.holder.y = stage.blastZone.t - 20
                 this.held = false
             end
 
@@ -192,33 +192,19 @@ goldstool = {
         return nil
     end,
 
-    -- this function is for handling a bug where if lani hits the stool with her grapple, it is still considered held by her until she takes damage
-    lani_bug_handling = function(this, lani)
-        if lani.state == 0 and not lani.holding then
-            lani:release_holding(this, this.vx, this.vy, false)
-            lani.grapple_hit = false
-            return false
-        end
-
-        return true
+    manage_holder = function(this)
+        if not this.holder then this.holder = goldstool.get_holder(this)
+        elseif this.holder.holding == nil and this.holder.grapple_hit == nil then this.holder = nil end
     end,
 
     manage_hold_state = function(this)
-        local is_actually_held = false
-        local holder = goldstool.get_holder(this)
-
-        if holder then
-            if holder.type.name == "lani" then
-                is_actually_held = goldstool.lani_bug_handling(this, holder)
-                if is_actually_held then this.throwerID = holder.connectionID end
-            else --delete this if the lani bug gets fixed    
-                this.throwerID = holder.connectionID
-                is_actually_held = true
-            end
-        end
-        if not is_actually_held then
+        if this.holder then
+            this.throwerID = this.holder.connectionID
+            this.held = true
+        else
             this.held = false
         end
+        
         if this.hb then
             this.hb.active = false
             this.hb = nil
@@ -263,7 +249,7 @@ goldstool = {
         -- flight
         if this.state == "flying" then
             this.vy = util.appr(this.vy, -3.5, 0.25)
-            if this.held and goldstool.get_holder(this):is_solid(0, 1) and this.vy > 0 then this.vy = 0 end
+            if this.held and this.holder:is_solid(0, 1) and this.vy > 0 then this.vy = 0 end
             goldstool.check_for_finish_fly(this)
         end
 
@@ -294,15 +280,15 @@ goldstool = {
         end
     end,
 
-    --[[
     check_for_force_drop = function(this)
-        local holder = goldstool.get_holder(this)
-        if this.was_colliding then
-            goldstool.shift_out(holder)
+        if this:is_solid(0, 0) and this:is_solid(0, 1) and this:is_solid(0, 2) and this:is_solid(0, 3) then
+            --if holder.type.name == "stepstools" then stepstools.set_state_default(holder) end
+            this.holder.holding = nil
+            goldstool.shift_out(this.holder)
+            this.holder.vy = 0
             this.held = false
         end
     end,
-    ]]
 
     handle_move = function(this)
         local px = this.x
@@ -317,15 +303,14 @@ goldstool = {
             if this.state == "free_body" then this:move(this.vx, this.vy)
             elseif this.state == "flying" then this:moveWithoutCollide(this.vx, this.vy) end
         elseif this.state == "flying" then
-            local holder = goldstool.get_holder(this)
-            local dx, dy = holder.x - this.x, holder.y - this.y
+            local dx, dy = this.holder.x - this.x, this.holder.y - this.y
 
-            this:moveWithoutCollide(this.vx - holder.vx, this.vy - holder.vy)
+            this:moveWithoutCollide(this.vx - this.holder.vx, this.vy - this.holder.vy)
 
-            holder.x = this.x + dx
-            holder.y = this.y + dy
+            this.holder.x = this.x + dx
+            this.holder.y = this.y + dy
 
-            --goldstool.check_for_force_drop(this)
+            goldstool.check_for_force_drop(this)
         end
 
         -- Move Riders
@@ -335,13 +320,11 @@ goldstool = {
     end,
 
     update_screen_wraps = function(this)
-        local holder = goldstool.get_holder(this)
-
         if not this.held then
             if this:is_solid(0, 1) then this.screen_wraps = 0 end
         else
-            if holder then
-                if holder:is_solid(0, 1) then this.screen_wraps = 0 end
+            if this.holder then
+                if this.holder:is_solid(0, 1) then this.screen_wraps = 0 end
             end
         end
     end,
@@ -388,7 +371,7 @@ goldstool = {
         end
 
         -- Wing Damage
-        if this.state == "flying" then
+        if this.state == "flying" and not this.held then
             hb_w, hb_h = 8, 9
             if not this.wings_were_active then
                 this.leftwing_hb = hitbox.create(this.owner.connectionID, hb_x - 7, hb_y, hb_w, hb_h, 8, -4, -3, 2)
@@ -425,7 +408,9 @@ goldstool = {
 
         goldstool.update_sweats(this)
 
-        if this.held then goldstool.manage_hold_state(this) end
+        goldstool.manage_holder(this)
+
+        goldstool.manage_hold_state(this)
 
         if not this.held then goldstool.manage_thrown_state(this) end
 
