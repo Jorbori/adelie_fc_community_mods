@@ -146,8 +146,10 @@ goldstool = {
     end,
 
     initiate_flight = function(this)
-        if this.state == "free_body" and this.fly_start_timer == 0 and this.screen_wraps < 2 then this.fly_start_timer = 6 end
-        love.audio.play("stoolfly", "static")
+        if this.state == "free_body" and this.fly_start_timer == 0 and this.screen_wraps < 2 then
+            this.fly_start_timer = 6
+            love.audio.play("stoolfly", "static")
+        end
     end,
 
     update_fly_start = function(this)
