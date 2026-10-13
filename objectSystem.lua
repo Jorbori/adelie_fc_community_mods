@@ -79,7 +79,7 @@ objectSystem = {
             for _, p in ipairs(objects) do
                 if p.solid and check_semisolid(this, px, py, p) then
                     return p
-                elseif p.semisolid and check_semisolid(this, px, py, p) then
+                elseif p.semisolid and not ignore_semisolid and check_semisolid(this, px, py, p) then
                     return p
                 end
             end

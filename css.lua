@@ -16,7 +16,7 @@ NUM_PLAYER_SKINS_MODDED = {
     roundelie = 3  -- TODO: rosetta skin is temporarily disabled until it's reworked
 }
 NUM_PLAYER_SKINS_VANILLA = {
-    maddy = 5,
+    maddy = 4,
     lani = 4
 }
 AVAILABLE_CHARS = {"maddy", "gem_maddy", "heavy_maddy", "lani", "stepstools","roundelie"}
