@@ -8,7 +8,7 @@ MOD_VERSION = 100
 SEED_MAX = 9999
 
 NUM_PLAYER_SKINS_MODDED = {
-    maddy = 4,
+    maddy = 5,
     gem_maddy = 4,
     heavy_maddy = 4,
     lani = 4,
