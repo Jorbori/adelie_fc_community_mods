@@ -10,6 +10,7 @@ maddy = {
             {sprites["characters/maddy_2"], {126 / 255, 37 / 255, 83 / 255, 1}}, -- badeline
             {sprites["characters/maddy_3"], {29 / 255, 43 / 255, 83 / 255, 1}}, -- caroline
             {sprites["characters/maddy_4"], {171 / 255, 82 / 255, 54 / 255, 1}}, -- funkeline
+            {sprites["characters/maddy_5"], {255 / 255, 119 / 255, 168 / 255, 1}}, -- sakura
         }
 
         this.spritesheet, this.hair_color = unpack(player_skins[tonumber(skin)])
