@@ -147,6 +147,7 @@ goldstool = {
 
     initiate_flight = function(this)
         if this.state == "free_body" and this.fly_start_timer == 0 and this.screen_wraps < 2 then this.fly_start_timer = 6 end
+        love.audio.play("stoolfly", "static")
     end,
 
     update_fly_start = function(this)
@@ -288,7 +289,7 @@ goldstool = {
     check_for_force_drop = function(this)
         if this:is_solid(0, 0) and this:is_solid(0, 1) and this:is_solid(0, 2) and this:is_solid(0, 3) then
             this.holder.holding = nil
-            goldstool.shift_out(this.holder)
+            goldstool.shift_out(this.holder, false)
             this.holder.vy = 0
             this.held = false
         end
@@ -315,7 +316,9 @@ goldstool = {
             this.holder.y = this.y + dy
 
             goldstool.shift_out(this.holder, true)
-            this.x = this.
+
+            this.x = this.holder.x - dx
+            this.y = this.holder.y - dy
 
             goldstool.check_for_force_drop(this)
         end
