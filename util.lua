@@ -69,5 +69,11 @@ util = {
             [143] = {255, 157, 129}
         }
         return colors[i][1]/255, colors[i][2]/255, colors[i][3]/255
+    end,
+    tableContains = function(tble, element)
+        for _, v in ipairs(tble) do
+            if v == element then return true end
+        end
+        return false
     end
 }

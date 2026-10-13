@@ -1086,7 +1086,7 @@ stage = {
                     stage.addPlatform(cx + 0, cy + 0, 16, 4, "semisolid")
                     stage.addPlatform(cx + 32, cy + 16, 16, 4, "semisolid")
 
-                    --objectSystem.createObject(block, cx + 8, cy + 24, 1)
+                    objectSystem.createObject(block, cx + 40, cy + 8, 1)
 
                     love.graphics.setCanvas(temp_canvas_bg)
                     --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_bg.png"), cx, cy)
@@ -1309,6 +1309,7 @@ stage = {
     },
 
     init = function(stageIdx)
+        stage.seed = localRandom.combo_seed
         stage.platforms = {}
         stageIdx = stageIdx or 1
         if stage.layouts[stageIdx] then

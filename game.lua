@@ -142,6 +142,8 @@ game = {
         overlay.setInputDisplay("")
         love.audio.play("readysetgo", "static")
 
+        if game.mode == "REPLAY" and replayData then localRandom.setSeed(playerData[1].id) end
+
         stage.init(stageIdx)
 
         inputSource.resetInputSources()
@@ -620,13 +622,13 @@ game = {
                 gameOverTimer = gameOverTimer - 1
                 if gameOverTimer == 0 then
                     if game.mode == "TRAINING" then
-                        replay.save(game.stageIdx, game.playerData, frontierFrame)
+                        replay.save(game.stageIdx, stage.seed, game.playerData, frontierFrame)
                         gameController.enterCSS(game.mode)
                     elseif game.mode == "REPLAY" then
                         gameController.enterTitle("replay_browser")
                     else
                         network.sendMessage("MATCHEND|" .. tostring(winner), "reliable")
-                        replay.save(game.stageIdx, game.playerData, frontierFrame)
+                        replay.save(game.stageIdx, stage.seed, game.playerData, frontierFrame)
                     end
                 end
             end
