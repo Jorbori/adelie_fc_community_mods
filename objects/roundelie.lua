@@ -954,6 +954,8 @@ roundelie = {
                             local temp_sprite = nil
                             if ground_hit.type.name == "moving_platform" then
                                 temp_sprite = ground_hit.sprite
+                            elseif ground_hit.type.name == "goldstool" then
+                                temp_sprite = (sprites["objects/goldstool_" .. tonumber(ground_hit.skin)][1]).img
                             else
                                 temp_sprite = sprites["objects/" .. ground_hit.type.name]
                             end
@@ -1036,7 +1038,8 @@ roundelie = {
             if this.dash_time > 0 then
                 if this.dash_time == 2 then  -- TODO: messy
                     this.freeze = 3  -- half of the value applied on-hit
-                    this.teleport_hb = hitbox.create(this.connectionID, (this.x  - 1), (this.y  - 1), 10, 10, 3, 5 * this.facing, 0, 2)
+                    local kb_direction = (this.prev_x - this.x == 0) and this.facing or (-1 * util.sign(this.prev_x - this.x))
+                    this.teleport_hb = hitbox.create(this.connectionID, (this.x  - 1), (this.y  - 1), 10, 10, 8, 4 * kb_direction, 0, 2)
                     this.teleport_hb.telefrag = true
                     this.teleport_hb.hit_sfx = "zap"  -- generic "crit" sfx used for big hits, e.g. Lani's tipper and body slam
                     this.vx = 0
