@@ -1052,9 +1052,9 @@ stage = {
                     stage.addPlatform(cx + 16, cy + 32, 32, 16, "solid")
                     
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/control_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Falling Brick Chunk
@@ -1063,9 +1063,9 @@ stage = {
                     stage.addPlatform(cx + 0, cy + 24, 32, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/brick_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Classic Chunk
@@ -1075,9 +1075,9 @@ stage = {
                     stage.addPlatform(cx + 32, cy + 24, 16, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/classic_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(7)})
                 -- Lava Chunk
@@ -1089,9 +1089,9 @@ stage = {
                     objectSystem.createObject(block, cx + 40, cy + 8, 1)
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/lava_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(5)})
                 end
@@ -1116,9 +1116,9 @@ stage = {
                     stage.addPlatform(cx + 32, cy + 0, 16, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grey_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(6)})
                 -- Sand Chunk
@@ -1138,9 +1138,9 @@ stage = {
                     make_flag_custom(cx + 21, cy + 8, false, util.color(11)).secret = enable_secret
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/sand_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {162/255, 136/255, 121/255})
                 -- Grass Chunk
@@ -1151,9 +1151,9 @@ stage = {
                     stage.addPlatform(cx + 0, cy + 0, 32, 4, "semisolid")
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/grass_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(9)})
                 -- Snow Chunk
@@ -1166,9 +1166,9 @@ stage = {
                     objectSystem.createObject(snowball, cx + 16, cy + 8, 1)
 
                     love.graphics.setCanvas(temp_canvas_bg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_bg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_bg.png"), cx, cy)
                     love.graphics.setCanvas(temp_canvas_fg)
-                    --love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_fg.png"), cx, cy)
+                    love.graphics.draw(love.graphics.newImage("resources/graphics/stages/puzzlemod/snow_fg.png"), cx, cy)
 
                     table.insert(snowflakeColors, {util.color(7)})
                 end
@@ -1184,8 +1184,8 @@ stage = {
             
             love.graphics.setCanvas()  -- reset
             
-            stage.bgImage = nil--love.graphics.newImage(temp_canvas_bg:newImageData())
-            stage.fgImage = nil--love.graphics.newImage(temp_canvas_fg:newImageData())
+            stage.bgImage = love.graphics.newImage(temp_canvas_bg:newImageData())
+            stage.fgImage = love.graphics.newImage(temp_canvas_fg:newImageData())
 
             stage.bgColor = nil
             stage.bgShader = nil
